@@ -6,7 +6,7 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:01 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 00:01:03 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 00:04:28 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,8 @@ int	main(void)
 	char	*line;
 	int	fd = open("test.md", O_RDONLY);
 	
+	line = get_next_line(fd);
+	printf("%s\n", line);
 	line = get_next_line(fd);
 	printf("%s\n", line);
 	close(fd);
