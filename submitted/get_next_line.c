@@ -6,7 +6,7 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:01 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 00:04:28 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 00:48:06 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ static void	prev_init(char **prev)
 	(*prev)[0] = '\0';
 }
 
-int	get_nl_index(char *prev, ssize_t read_bytes)
+int	get_nl_index(char *prev)
 {
 	int	i;
 
@@ -130,10 +130,11 @@ char	*get_next_line(int fd)
 		if (read_bytes <= 0)
 			return (NULL);
 		append_buffer(&prev, buffer, read_bytes);
-		index = get_nl_index(prev, read_bytes);
+		//printf("prev: %s\n", prev);
+		index = get_nl_index(prev);
 		printf("index: %d\n", index);
 		if (read_bytes < BUFFER_SIZE && index < 0)
-			return (process_last_line(&prev, buffer));
+			return (process_next_line(&prev, index));
 	}
 	return (process_next_line(&prev, index));
 }
@@ -147,9 +148,9 @@ int	main(void)
 	int	fd = open("test.md", O_RDONLY);
 	
 	line = get_next_line(fd);
-	printf("%s\n", line);
+	printf("%s", line);
 	line = get_next_line(fd);
-	printf("%s\n", line);
+	printf("%s", line);
 	close(fd);
 	/*
 	char	*test;
