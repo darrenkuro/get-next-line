@@ -6,7 +6,7 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:36 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 22:36:34 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 22:47:05 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	ft_strlen(char *s)
 }
 
 /* Malloc a string that start at an index for length len. */
-static char	*ft_substr(char *s, int start, int len)
+char	*ft_substr(char *s, int start, int len)
 {
 	char	*str;
 	int		i;
