@@ -6,7 +6,7 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:36 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 22:09:29 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 22:22:48 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,20 @@ char	*process_next_line(char **prev, int index, int end)
 	if (!end || (*prev)[index] == '\n')
 	{
 		line = ft_substr(*prev, 0, index + 1);
+		if (!line)
+		{
+			free(*prev);
+			*prev = NULL;
+			return (NULL);
+		}
 		tmp = ft_substr(*prev, index + 1, ft_strlen(*prev) - index - 1);
 		free(*prev);
 		*prev = tmp;
+		if (!tmp)
+		{
+			free(line);
+			return (NULL);
+		}
 	}
 	else
 	{
@@ -91,7 +102,6 @@ char	*process_next_line(char **prev, int index, int end)
 	if (!line)
 	{
 		free(*prev);
-		free(tmp);
 		*prev = NULL;
 	}
 	return (line);
