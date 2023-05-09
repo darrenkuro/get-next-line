@@ -6,7 +6,7 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:36 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 21:52:07 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 22:09:29 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ char	*process_next_line(char **prev, int index, int end)
 	if (!line)
 	{
 		free(*prev);
+		free(tmp);
 		*prev = NULL;
 	}
 	return (line);
