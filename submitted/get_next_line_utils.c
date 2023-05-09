@@ -6,7 +6,7 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:36 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 22:22:48 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 22:36:34 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,53 +58,6 @@ int	nl_index(char *prev, int end)
 		return (i);
 	else
 		return (-1);
-}
-
-/* Return the string with the first \n (or \0), and update the ptr to next
- * byte (both copy and free).
- * At the address of prev, str has to include a '\n' at index unless..
- * Return NULL if pointer is NULL or malloc fails. */
-char	*process_next_line(char **prev, int index, int end)
-{
-	char	*line;
-	char	*tmp;
-
-	if (end && !(*prev)[0])
-	{
-		free(*prev);
-		*prev = NULL;
-		return (NULL);
-	}
-	if (!end || (*prev)[index] == '\n')
-	{
-		line = ft_substr(*prev, 0, index + 1);
-		if (!line)
-		{
-			free(*prev);
-			*prev = NULL;
-			return (NULL);
-		}
-		tmp = ft_substr(*prev, index + 1, ft_strlen(*prev) - index - 1);
-		free(*prev);
-		*prev = tmp;
-		if (!tmp)
-		{
-			free(line);
-			return (NULL);
-		}
-	}
-	else
-	{
-		line = ft_substr(*prev, 0, index);
-		free(*prev);
-		*prev = NULL;
-	}
-	if (!line)
-	{
-		free(*prev);
-		*prev = NULL;
-	}
-	return (line);
 }
 
 int	append_buffer(char **prev, char *buffer, ssize_t n)
