@@ -6,13 +6,14 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:01 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 00:48:06 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 18:48:44 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
 
+/* Get the length of the string. */
 int	ft_strlen(char *s)
 {
 	int	i;
@@ -23,47 +24,54 @@ int	ft_strlen(char *s)
 	return (i);
 }
 
+/* Malloc a string that start at an index for length len. */
+char	*ft_substr(char *s, int start, int len)
+{
+	char	*str;
+	int	i;
+
+	if (!s)
+		return (NULL);
+	if (len > ft_strlen(s) + 1)
+		len = ft_strlen(s) + 1;
+	str = (char *) malloc((len + 1) * sizeof(char));
+	if (!str)
+		return (NULL);
+	i = -1;
+	while (++i < len && start + i < ft_strlen(s))
+		str[i] = s[start + i];
+	str[i] = '\0';
+	return (str);
+}
+
 /* Return the string with the first \n (or \0), and update the ptr to next
  * byte (both copy and free).
- * At the address of prev, str has to include a '\n' or '\0' at index.
+ * At the address of prev, str has to include a '\n' at indexi unless it's the end.
  * Return NULL if pointer is NULL or malloc fails. */
-static char	*process_next_line(char **prev, int index)
+static char	*process_next_line(char **prev, int index, int end)
 {
 	char	*line;
 	char	*tmp;
-	int		i;
-	int		len;
 
-	len = ft_strlen(*prev);
-	line = (char *) malloc((index + 2) * sizeof(char));
-	tmp = (char *) malloc((len - index) * sizeof(char));
-	if (!line || !tmp)
+	if (end && !(*prev)[0])
+	{
+		free(*prev);
+		*prev = NULL;
 		return (NULL);
-	i = -1;
-	while (++i <= index)
-		line[i] = (*prev)[i];
-	line[i--] = '\0';
-	while (++i < len)
-		tmp[i - index - 1] = (*prev)[i];
-	tmp[i - index - 1] = '\0';
-	free(*prev);
-	*prev = tmp;
-	return (line);
-}
-
-static char	*process_last_line(char **prev, char *buffer)
-{
-	char	*line;
-	int		i;
-
-	line = (char *) malloc(ft_strlen(buffer) + 1 * sizeof(char));
-	if (!line)
-		return (NULL);
-	i = -1;
-	while (buffer[++i])
-		line[i] = buffer[i];
-	line[i]  = '\0';
-	free(*prev);
+	}
+	if (!end || (*prev)[index] == '\n')
+	{
+		line = ft_substr(*prev, 0, index + 1);
+		tmp = ft_substr(*prev, index + 1, ft_strlen(*prev) - index - 1);
+		free(*prev);
+		*prev = tmp;
+	}
+	else
+	{
+		line = ft_substr(*prev, 0, index);
+		free(*prev);
+		*prev = NULL;
+	}
 	return (line);
 }
 
@@ -92,24 +100,29 @@ static void	append_buffer(char **prev, char *buffer, ssize_t n)
 	*prev = tmp;
 }
 
-static void	prev_init(char **prev)
+static int	prev_init(char **prev)
 {
 	*prev = (char *) malloc(sizeof(char));
 	if (!*prev)
-		return ;
+		return (0);
 	(*prev)[0] = '\0';
+	return (1);
 }
 
-int	get_nl_index(char *prev)
+int	nl_index(char *prev, int end)
 {
 	int	i;
 
+	if (!prev)
+		return (-1);
 	i = -1;
 	while (prev[++i])
 		if (prev[i] == '\n')
 			return (i);
-	return (-1);
-
+	if (end)
+		return (i);
+	else
+		return (-1);
 }
 
 char	*get_next_line(int fd)
@@ -117,28 +130,25 @@ char	*get_next_line(int fd)
 	static char	*prev;
 	ssize_t		read_bytes;
 	char		buffer[BUFFER_SIZE];
-	int			index;
 
-	if (!prev)
-		prev_init(&prev);
-	if (fd < 0 || !prev)
+	if (fd < 0 || (!prev && !prev_init(&prev)))
 		return (NULL);
-	index = -1;
-	while (index < 0)
+	while (nl_index(prev, 0) < 0)
 	{
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (read_bytes <= 0)
+		if (read_bytes < 0)
+		{
+			free(prev);
+			prev = NULL;
 			return (NULL);
+		}
 		append_buffer(&prev, buffer, read_bytes);
-		//printf("prev: %s\n", prev);
-		index = get_nl_index(prev);
-		printf("index: %d\n", index);
-		if (read_bytes < BUFFER_SIZE && index < 0)
-			return (process_next_line(&prev, index));
+		if (read_bytes < BUFFER_SIZE)
+			return (process_next_line(&prev, nl_index(prev, 1), 1));
 	}
-	return (process_next_line(&prev, index));
+	return (process_next_line(&prev, nl_index(prev, 0), 0));
 }
-
+/*
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -146,31 +156,14 @@ int	main(void)
 {
 	char	*line;
 	int	fd = open("test.md", O_RDONLY);
-	
-	line = get_next_line(fd);
-	printf("%s", line);
-	line = get_next_line(fd);
-	printf("%s", line);
-	close(fd);
-	/*
-	char	*test;
-	char	*line;
 
-	test = (char *) malloc(6);
-	test[0] = 'a';
-	test[1] = 'b';
-	test[2] = '\n';
-	test[3] = 'c';
-	test[4] = 'd';
-	test[5] = '\0';
-	line = process_next_line(&test, 2);
-	//printf("left: %s\n", test);
-	//printf("line: %s\n", line);
-	//free(test);
-	free(line);
-	append_buffer(&test, "abcd", 2);
-	printf("%s\n", test);
-	free(test);
-	*/
+	for (int i = 0; i < 4; i++)
+	{
+		line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+	}
+	close(fd);
 	return (0);
 }
+*/
