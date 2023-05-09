@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:36 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 21:28:48 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/09 19:01:08 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 /* Get the length of the string. */
 static int	ft_strlen(char *s)
@@ -91,7 +91,7 @@ char	*process_next_line(char **prev, int index, int end)
 	return (line);
 }
 
-int	append_buffer(char **prev, char *buffer, ssize_t n)
+void	append_buffer(char **prev, char *buffer, ssize_t n)
 {
 	char	*tmp;
 	int		len;
@@ -99,11 +99,11 @@ int	append_buffer(char **prev, char *buffer, ssize_t n)
 	int		j;
 
 	if (n < 0)
-		return (0);
+		return ;
 	len = ft_strlen(*prev);
 	tmp = (char *) malloc((len + n + 1) * sizeof(char));
 	if (!tmp)
-		return (0);
+		return ;
 	i = -1;
 	while (++i < len)
 		tmp[i] = (*prev)[i];
@@ -114,5 +114,4 @@ int	append_buffer(char **prev, char *buffer, ssize_t n)
 	tmp[++i] = '\0';
 	free(*prev);
 	*prev = tmp;
-	return (1);
 }
