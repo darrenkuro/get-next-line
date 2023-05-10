@@ -6,7 +6,7 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:01 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/10 12:32:41 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/10 13:00:17 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,11 @@ static char	*update_prev(char **prev, char *replace, char **buffer)
 		free(*buffer);
 		*buffer = NULL;
 	}
-	free(*prev);
-	*prev = replace;
+	if (*prev != NULL)
+	{
+		free(*prev);
+		*prev = replace;
+	}
 	return (*prev);
 }
 

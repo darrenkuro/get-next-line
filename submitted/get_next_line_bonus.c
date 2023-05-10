@@ -13,18 +13,25 @@
 #include "get_next_line_bonus.h"
 
 /* Free the buffer and update with prev with replacement. */
-static char	*update_prev(char **prev, char *replace, char *buffer)
+static char	*update_prev(char **prev, char *replace, char **buffer)
 {
-	free(buffer);
-	free(*prev);
-	*prev = replace;
+	if (*buffer != NULL)
+	{
+		free(*buffer);
+		*buffer = NULL;
+	}
+	if (*prev != NULL)
+	{
+		free(*prev);
+		*prev = replace;
+	}
 	return (*prev);
 }
 
 /* Return the next line, and update the prev to next byte (both copy and free).
  * Prev str has to include a '\n' at index, unless it's at the end.
  * Return NULL if any malloc fails, with all allocated resources freed. */
-static char	*process_prev(char **prev, int index, int end, char *buffer)
+static char	*process_prev(char **prev, int index, int end, char **buffer)
 {
 	char	*line;
 	char	*tmp;
@@ -37,7 +44,7 @@ static char	*process_prev(char **prev, int index, int end, char *buffer)
 		tmp = ft_substr(*prev, index + 1, ft_strlen(*prev) - index - 1);
 		update_prev(prev, tmp, buffer);
 		if (!tmp)
-			return (free(line), free(buffer), NULL);
+			return (free(line), free(*buffer), NULL);
 	}
 	else
 	{
@@ -57,16 +64,16 @@ static char	*process_next_line(int fd, char **prev)
 
 	buffer = (char *) malloc(BUFFER_SIZE * sizeof(char));
 	if (!buffer)
-		return (NULL);
+		return (update_prev(prev, NULL, &buffer));
 	while (nl_index(*prev, 0) < 0)
 	{
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (!append_buffer(prev, buffer, read_bytes))
-			return (update_prev(prev, NULL, buffer));
+			return (update_prev(prev, NULL, &buffer));
 		if (read_bytes < BUFFER_SIZE)
-			return (process_prev(prev, nl_index(*prev, 1), 1, buffer));
+			return (process_prev(prev, nl_index(*prev, 1), 1, &buffer));
 	}
-	return (process_prev(prev, nl_index(*prev, 0), 0, buffer));
+	return (process_prev(prev, nl_index(*prev, 0), 0, &buffer));
 }
 
 /* Get the next line of a file descriptor. */
