@@ -6,14 +6,14 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:36 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 22:47:05 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/10 02:01:59 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 /* Get the length of the string. */
-static int	ft_strlen(char *s)
+int	ft_strlen(char *s)
 {
 	int	i;
 
@@ -21,6 +21,23 @@ static int	ft_strlen(char *s)
 	while (s[i])
 		++i;
 	return (i);
+}
+
+/* Return the index of '\n', or the index of the '\0' if at the end. */
+int	nl_index(char *prev, int end)
+{
+	int	i;
+
+	if (!prev)
+		return (-1);
+	i = -1;
+	while (prev[++i])
+		if (prev[i] == '\n')
+			return (i);
+	if (end)
+		return (i);
+	else
+		return (-1);
 }
 
 /* Malloc a string that start at an index for length len. */
@@ -43,29 +60,12 @@ char	*ft_substr(char *s, int start, int len)
 	return (str);
 }
 
-/* Return the index of '\n', or the index of the '\0' if at the end. */
-int	nl_index(char *prev, int end)
-{
-	int	i;
-
-	if (!prev)
-		return (-1);
-	i = -1;
-	while (prev[++i])
-		if (prev[i] == '\n')
-			return (i);
-	if (end)
-		return (i);
-	else
-		return (-1);
-}
-
+/* Append buffer to prev, return 1 for success, 0 for failure. */
 int	append_buffer(char **prev, char *buffer, ssize_t n)
 {
 	char	*tmp;
 	int		len;
 	int		i;
-	int		j;
 
 	if (n < 0)
 		return (0);
@@ -75,13 +75,11 @@ int	append_buffer(char **prev, char *buffer, ssize_t n)
 		return (0);
 	i = -1;
 	while (++i < len)
-		tmp[i] = (*prev)[i];
-	j = -1;
-	--i;
-	while (--n >= 0)
-		tmp[++i] = buffer[++j];
-	tmp[++i] = '\0';
+		*tmp++ = (*prev)[i];
+	while (++i < len + n + 1)
+		*tmp++ = *buffer++;
+	*tmp = '\0';
 	free(*prev);
-	*prev = tmp;
+	*prev = tmp - len - n;
 	return (1);
 }

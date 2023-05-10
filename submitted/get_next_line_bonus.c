@@ -6,61 +6,96 @@
 /*   By: dlu <dlu@student.42berlin.de>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 03:34:01 by dlu               #+#    #+#             */
-/*   Updated: 2023/05/09 19:07:14 by dlu              ###   ########.fr       */
+/*   Updated: 2023/05/10 02:11:14 by dlu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-#include <stdio.h>
 
-static int	prev_init(char **prev)
+/* Free the old prev and update with the replacement ptr and return it. */
+static char	*update_prev(char **prev, char *replace)
 {
-	*prev = (char *) malloc(sizeof(char));
-	if (!*prev)
-		return (0);
-	(*prev)[0] = '\0';
-	return (1);
+	free(*prev);
+	*prev = replace;
+	return (*prev);
 }
 
+/* Return the next line, and update the prev to next byte (both copy and free).
+ * Prev str has to include a '\n' at index, unless it's at the end.
+ * Return NULL if any malloc fails, with all allocated resources freed. */
+static char	*process_prev(char **prev, int index, int end)
+{
+	char	*line;
+	char	*tmp;
+
+	if (end && !ft_strlen(*prev))
+		return (update_prev(prev, NULL));
+	if ((*prev)[index] == '\n')
+	{
+		line = ft_substr(*prev, 0, index + 1);
+		tmp = ft_substr(*prev, index + 1, ft_strlen(*prev) - index - 1);
+		update_prev(prev, tmp);
+		if (!tmp)
+			return (free(line), NULL);
+	}
+	else
+	{
+		line = ft_substr(*prev, 0, index);
+		update_prev(prev, NULL);
+	}
+	if (!line)
+		return (update_prev(prev, NULL));
+	return (line);
+}
+
+/* Process next line overhead, protect against faulty BUFFER_SIZE (0). */
+static char	*process_next_line(int fd, char **prev)
+{
+	ssize_t	read_bytes;
+	char	buffer[BUFFER_SIZE];
+
+	while (nl_index(*prev, 0) < 0)
+	{
+		read_bytes = read(fd, buffer, BUFFER_SIZE);
+		if (!append_buffer(prev, buffer, read_bytes))
+			return (update_prev(prev, NULL));
+		if (read_bytes < BUFFER_SIZE)
+			return (process_prev(prev, nl_index(*prev, 1), 1));
+	}
+	return (process_prev(prev, nl_index(*prev, 0), 0));
+}
+
+/* Get the next line of a file descriptor. */
 char	*get_next_line(int fd)
 {
 	static char	*prev[FD_MAX];
-	ssize_t		read_bytes;
-	char		buffer[BUFFER_SIZE];
 
-	if (fd < 0 || (!prev[fd] && !prev_init(&prev[fd])))
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	while (nl_index(prev[fd], 0) < 0)
+	if (!prev[fd])
 	{
-		read_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (read_bytes < 0)
-		{
-			free(prev[fd]);
-			prev[fd] = NULL;
+		prev[fd] = (char *) malloc(sizeof(char));
+		if (!prev[fd])
 			return (NULL);
-		}
-		append_buffer(&prev[fd], buffer, read_bytes);
-		if (read_bytes < BUFFER_SIZE)
-			return (process_next_line(&prev[fd], nl_index(prev[fd], 1), 1));
+		prev[fd][0] = '\0';
 	}
-	return (process_next_line(&prev[fd], nl_index(prev[fd], 0), 0));
+	return (process_next_line(fd, &prev[fd]));
 }
+
 /*
 #include <fcntl.h>
-#include <unistd.h>
 #include <stdio.h>
-int	main(void)
+int main()
 {
-	char	*line;
-	int	fd = open("test.md", O_RDONLY);
+	int fd = open("test.md", O_RDONLY);
+	char *test;
 
-	for (int i = 0; i < 4; i++)
+	for(int i = 0; i < 2; i++)
 	{
-		line = get_next_line(fd);
-		printf("%s", line);
-		free(line);
+		test = get_next_line(fd);
+		printf("%s", test);
+		free(test);
 	}
 	close(fd);
-	return (0);
 }
 */
