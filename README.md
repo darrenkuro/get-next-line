@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"/>
   <img src="https://img.shields.io/badge/score-125%2F100-3CB371?style=flat-square&logo=42&logoColor=white" alt="Score"/>
-  <img src="https://img.shields.io/badge/date-May%2014%2C%202023-ff6984?style=flat-square&logo=Cachet&logoColor=white" alt="Date"/>
+  <img src="https://img.shields.io/badge/date-May%2014th%2C%202023-ff6984?style=flat-square&logo=Cachet&logoColor=white" alt="Date"/>
 </p>
 
 ---
