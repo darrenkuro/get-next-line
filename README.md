@@ -4,7 +4,7 @@
     <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square&logo=opensourceinitiative&logoColor=white" alt="License"/>
     <img src="https://img.shields.io/badge/status-stable-brightgreen?style=flat-square&logo=git&logoColor=white" alt="Status">
     <img src="https://img.shields.io/badge/score-125%2F100-3CB371?style=flat-square&logo=42&logoColor=white" alt="Score"/>
-    <img src="https://img.shields.io/badge/date-May%2014th,%2C%202023-ff6984?style=flat-square&logo=Cachet&logoColor=white" alt="Date"/>
+    <img src="https://img.shields.io/badge/date-May%2014th,%202023-ff6984?style=flat-square&logo=Cachet&logoColor=white" alt="Date"/>
 </p>
 
 > A simple function that reads and returns the next line from a file descriptor.
