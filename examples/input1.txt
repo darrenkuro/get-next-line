@@ -1,0 +1,11 @@
+Hello world
+This is a test file
+
+It contains multiple lines.
+
+Some lines are empty.
+
+
+And some lines have trailing spaces
+
+End of file.
