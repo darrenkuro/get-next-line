@@ -36,13 +36,15 @@
 ### Installation & Usage
 ```bash
 git clone https://github.com/darrenkuro/get-next-line.git && cd get-next-line
-make # build libftprintf.a
-clang main.c libftptinf.a -Iinclude
 ```
 
 ### Examples & Demo
-
-### Development
+```bash
+clang src/get_next_line.c src/get_next_line_utils.c test/main.c -o gnl -Iinclude
+```
+```bash
+clang src/get_next_line_bonus.c src/get_next_line_utils_bonus.c test/main_bonus.c -o gnl -Iinclude
+```
 
 ---
 
