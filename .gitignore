@@ -27,15 +27,20 @@ build/
 __pycache__/
 *.py[cod]
 *.egg-info/
+.venv/
 
 # Rust
 target/
 
+# Nix
+result/
+
 # C/C++
 *.o
-*.out
+*.d
 *.a
 *.so
+*.out
 
 # Obsidian vault cache
 .obsidian/workspace
@@ -51,3 +56,7 @@ target/
 !.github/workflows/
 !.github/ISSUE_TEMPLATE/
 !.github/PULL_REQUEST_TEMPLATE.md
+
+# Build
+gnl
+get-next-line
